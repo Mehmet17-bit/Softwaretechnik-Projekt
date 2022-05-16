@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>Manage vehicles</h2>
+<mat-dialog-content class="mat-typography">
+  <div class="container">
+    <div class="row">
+      <div>
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">IMEI</th>
+            <th scope="col">Name</th>
+            <th scope="col">Zone</th>
+            <th scope="col">Sent datasets</th>
+            <th scope="col">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let user of dataService.users">
+            <td>{{user.id}}</td>
+            <td>{{user.imei}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.zone}}</td>
+            <td>{{user.count}}</td>
+            <td>
+              <button mat-icon-button title="Edit user" (click)="toggleEdit(user.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button title="Delete user" (click)="delete(user.id)">
+                <mat-icon>delete icon</mat-icon>
+              </button>
+              <button mat-icon-button title="Show on map" *ngIf="user.count > 0" (click)="show(user.id)">
+                <mat-icon>visibility icon</mat-icon>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td *ngIf="edit">{{old.id}}</td>
+            <td *ngIf="!edit"></td>
+            <td><input #imei type="number" class="form-control col-lg-9" placeholder="IMEI"></td>
+            <td><input #name type="text" class="form-control col-lg-9" placeholder="Name"></td>
+            <td>
+              <mat-form-field appearance="fill">
+                <mat-label>Zone</mat-label>
+                <mat-select #zone>
+                  <mat-option *ngFor="let option of this.dataService.zones" value="{{option.name}}">{{option.name}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td *ngIf="edit">{{old.count}}</td>
+            <td *ngIf="!edit"></td>
+            <td *ngIf="!edit">
+              <button mat-flat-button color="primary" (click)="add()">Register vehicle</button>
+            </td>
+            <td *ngIf="edit">
+              <button mat-flat-button color="primary" (click)="update(old.id)">Update vehicle</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Close</button>
+</mat-dialog-actions>

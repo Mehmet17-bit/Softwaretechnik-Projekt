@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Digital RoboTaxi Logbook</h2>
+<mat-dialog-content class="mat-typography">
+  <div class="container">
+    <div class="row">
+      <div>
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Latitude</th>
+            <th scope="col">Longitude</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let dataset of dataService.history">
+            <td>{{dataset.timestamp.toString()}}</td>
+            <td>{{dataset.latitude}}</td>
+            <td>{{dataset.longitude}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Close</button>
+</mat-dialog-actions>

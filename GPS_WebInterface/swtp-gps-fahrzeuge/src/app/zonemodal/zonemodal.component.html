@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Manage zones</h2>
+<mat-dialog-content class="mat-typography">
+  <div class="container">
+    <div class="row">
+      <div>
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Radius</th>
+            <th scope="col">Center</th>
+            <th scope="col">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let zone of dataService.zones">
+            <td>{{zone.name}}</td>
+            <td>{{zone.radius}}</td>
+            <td>{{zone.latitude}}, {{zone.longitude}}</td>
+            <td>
+              <button mat-icon-button title="Show on map" (click)="show(zone.name)">
+                <mat-icon>visibility icon</mat-icon>
+              </button>
+              <button mat-icon-button title="Edit zone" (click)="toggleEdit(zone.name)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button title="Delete zone" (click)="delete(zone.name)">
+                <mat-icon>delete icon</mat-icon>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><input #name type="text" class="form-control col-lg-9" placeholder="Name"></td>
+            <td><input #radius type="number" class="form-control col-sm-6" placeholder="Radius"></td>
+            <td>
+              <input #latitude type="number" class="form-control col-sm-5" placeholder="Latitude">
+              <input #longitude type="number" class="form-control col-sm-5" placeholder="Longitude">
+            </td>
+            <td>
+              <button mat-flat-button color="primary" *ngIf="!edit" (click)="add(name.value, latitude.valueAsNumber, longitude.valueAsNumber, radius.valueAsNumber)">Create zone</button>
+              <button mat-flat-button color="primary" *ngIf="edit" (click)="update(name.value, latitude.valueAsNumber, longitude.valueAsNumber, radius.valueAsNumber)">Update zone</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Close</button>
+</mat-dialog-actions>

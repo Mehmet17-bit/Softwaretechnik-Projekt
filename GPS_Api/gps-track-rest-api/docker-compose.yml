@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+    restapi:
+        container_name: restapi
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+        ports:
+            - 4001:4001
+    db:
+      container_name: db
+      restart: always
+      image: mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: 123456789
+        MYSQL_DATABASE: swtp
+        MYSQL_USER: swtp
+        MYSQL_PASSWORD: 123456789
+      ports:
+        - "3306:3306"
+    phpmyadmin:
+      image: phpmyadmin
+      container_name: phpmyadmin
+      restart: always
+      ports:
+        - 7000:80
+      environment:
+        PMA_HOST: db
+      depends_on:
+        - db

@@ -1,0 +1,23 @@
+stages:
+  - build
+  - test
+
+build-api:
+  image: docker:18-git
+  stage: build
+  services:
+    - docker:18-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo $CI_BUILD_TOKEN | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE .
+    - docker push $CI_REGISTRY_IMAGE
+  tags:
+    - docker
+quality-testing:
+  stage: test
+  script:
+    - sonar-scanner -Dsonar.projectKey=swtp_webinterface -Dsonar.sources=. -Dsonar.exclusions=**/*.spec.ts,**/*test.ts,**/*.js,coverage/** -Dsonar.test.inclusions=**/*.spec.ts,**/*test.ts -Dsonar.coverage.exclusions=**/*.js,src/main.ts,src/polyfills.ts,**/*environment*.ts,**/*module.ts,coverage/** -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info -Dsonar.host.url=https://scm.thm.de/sonar -Dsonarlogin=22e9561d07d8ddd93c94ec854aae0834c5c92546
+  tags:
+    - sonar

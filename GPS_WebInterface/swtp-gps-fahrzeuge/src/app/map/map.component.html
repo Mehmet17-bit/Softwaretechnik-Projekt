@@ -1,0 +1,143 @@
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block sidebar">
+      <div class="sidebar-sticky">
+        <br>
+        <br>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <h4 matBadge="{{this.dataService.currentLocations.length}}" matBadgeOverlap="false" matBadgeColor="accent">Active vehicles</h4>
+        </h6>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" (click)="focus(0, this.center.lat, this.center.lng)">
+              <i class="bi bi-house"></i>
+              Your position
+            </a>
+          </li>
+          <li class="nav-item" *ngFor="let entry of dataService.currentLocations">
+            <a class="nav-item" (click)="focus(entry.id, entry.latitude, entry.longitude)">
+              <i class="bi bi-truck"></i>
+              Vehicle {{entry.id}}
+              <i class="bi bi-exclamation-triangle-fill" style="color:red" *ngIf="this.notInZone.has(entry.id)"></i>
+            </a>
+          </li>
+        </ul>
+        <br>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <h4 matBadge="{{this.dataService.zones.length}}" matBadgeOverlap="false" matBadgeColor="primary">Zones</h4>
+        </h6>
+        <ul class="nav flex-column">
+          <li class="nav-item" *ngFor="let zone of dataService.zones">
+            <a class="nav-item" (click)="focusOnZone(zone.name)">
+              <i class="bi bi-pin-map"></i>
+              {{zone.name}}
+            </a>
+          </li>
+        </ul>
+        <br>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <h4>Actions</h4>
+        </h6>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-item">
+              <button mat-raised-button="" color="accent" class="mat-focus-indicator mat-raised-button mat-button-base mat-primary" (click)="openUserModal()">
+                <span class="mat-button-wrapper">Manage vehicles </span>
+                <span class="mat-button-focus-overlay"></span>
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">local_taxi</mat-icon>
+              </button>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item">
+              <button mat-raised-button="" color="primary" class="mat-focus-indicator mat-raised-button mat-button-base mat-primary" (click)="openZoneModal()">
+                <span class="mat-button-wrapper">Manage zones </span>
+                <span class="mat-button-focus-overlay"></span>
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">edit location icon</mat-icon>
+              </button>
+            </a>
+          </li>
+        </ul>
+        <br>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <h4>Notifications</h4>
+        </h6>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a>
+              <mat-slide-toggle color="accent" [(ngModel)]="notifyOnMove">Movement of vehicle</mat-slide-toggle>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a>
+              <mat-slide-toggle color="accent" [(ngModel)]="notifyOnInactivity">Inactivity of vehicle</mat-slide-toggle>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a>
+              <mat-slide-toggle color="accent" [(ngModel)]="notifyOnZoneLeave">Zone leave</mat-slide-toggle>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div role="main" class="col-md-12 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div class="col-auto" #map id="map-display"></div>
+      <div *ngIf="this.focused != 0;">
+        <div class="row">
+          <mat-card class="center">
+            <mat-card-title>
+              <h1 class="d-inline-block">Vehicle <b>{{focused}}</b></h1>
+              <span class="badge badge-pill badge-danger align-top" style="background:red" *ngIf="this.notInZone.has(focused)">Not in zone</span>
+            </mat-card-title>
+            <mat-card-subtitle>
+              <h2 class="d-inline-block">{{this.dataService.getUserbyID(focused).name}}</h2>
+              <h4 class="">Last updated: {{this.dataService.getDataSetbyID(focused).timestamp}}</h4>
+            </mat-card-subtitle>
+            <mat-card-content>
+              <h4>Latitude <b>{{this.dataService.getDataSetbyID(focused).latitude}}</b></h4>
+              <h4>Longitude <b>{{this.dataService.getDataSetbyID(focused).longitude}}</b></h4>
+              <h4>Total driven distance <b>{{this.totalDistance.toFixed(2)}}</b> km</h4>
+              <h4>Average velocity <b>{{avgVelocity.toFixed(1)}}</b> km/h</h4>
+              <h4>Received positions <b>{{this.dataService.getUserbyID(this.dataService.getDataSetbyID(focused).id).count}}</b></h4>
+              <h4>Device ID <b>{{this.dataService.getUserbyID(this.dataService.getDataSetbyID(focused).id).imei}}</b></h4>
+            </mat-card-content>
+            <mat-card-actions>
+              <mat-form-field appearance="fill">
+                <mat-label>Zone</mat-label>
+                <mat-select [(value)]="this.dataService.getUserbyID(focused).zone" (selectionChange)="dataService.updateUser(this.dataService.getUserbyID(focused), this.dataService.getUserbyID(focused).imei, this.dataService.getUserbyID(focused).name,  $event.value)">
+                  <mat-option *ngFor="let option of this.dataService.zones" value="{{option.name}}">{{option.name}}</mat-option>
+                </mat-select>
+                <span matripple="" class="mat-ripple mat-form-field-ripple"></span>
+              </mat-form-field>
+              <mat-slide-toggle [(ngModel)]="this.follow" color="primary">Follow on move</mat-slide-toggle>
+              <button mat-raised-button="" color="primary" class="mat-focus-indicator mat-raised-button mat-button-base mat-primary" (click)="openLogBookModal()">
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <span class="mat-button-wrapper">Logbook </span>
+                <span class="mat-button-focus-overlay"></span>
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">history icon</mat-icon>
+              </button>
+              <button mat-raised-button="" color="accent" class="mat-focus-indicator mat-raised-button mat-button-base mat-accent" (click)="drawRoute(focused)">
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <span class="mat-button-wrapper">Draw route </span>
+                <span class="mat-button-focus-overlay"></span>
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">place icon</mat-icon>
+              </button>
+              <button mat-raised-button="" color="warn" class="mat-focus-indicator mat-raised-button mat-button-base mat-warn" (click)="resetView();">
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <span class="mat-button-wrapper">Reset history </span>
+                <span matripple="" class="mat-ripple mat-button-ripple"></span>
+                <span class="mat-button-focus-overlay"></span>
+                <mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">history icon</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

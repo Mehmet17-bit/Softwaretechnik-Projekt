@@ -1,0 +1,20 @@
+<link data-require="bootstrap-css@3.3.6" data-semver="3.3.6" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css" />
+
+<mat-toolbar color="primary">
+  <span>RoboTaxi FleetManager</span>
+  <span class="example-spacer"></span>
+  <a mat-icon-button class="example-icon" title="GitLab" href="https://git.thm.de/sftm31/swtp-gps-fahrzeuge">
+    <mat-icon>code icon</mat-icon>
+  </a>
+  <button mat-icon-button class="example-icon" title="Android App">
+    <mat-icon>android icon</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon" title="Imprint" (click)="openImprint()">
+    <mat-icon>copyright icon</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon favorite-icon" title="Logout" (click)="dataservice.logout()" *ngIf="dataservice.getLoginStatus()">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+<router-outlet></router-outlet>
+<app-alert></app-alert>
